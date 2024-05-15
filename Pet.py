@@ -80,7 +80,7 @@ class Pet:
         self.owner = owner
 
     def __str__(self):
-        return f'{self.name} is a {self.species} with {self.strength} strength, {self.intelligence} intelligence, {self.agility} agility, and {self.luck} luck.'
+        return f'{self.name} is a {self.species} with {self.strength} strength, {self.intelligence} intelligence, {self.agility} agility, and {self.luck} luck.\nHealth: {self.health}\nFood: {self.food}\nEnergy: {self.energy}\nSanity: {self.sanity}'
     
     def feed(self):
         self.food = clamp(self.food + 10, 0, 100)
@@ -111,3 +111,12 @@ class Pet:
         # if the number is less than the agility stat, return True
         num = random.randint(0, 20)
         return num < self.agility
+    
+    def load_custom(self, data):
+        self.name = data['name']
+        self.species = data['species']
+        self.health = data['health']
+        self.strength = data['strength']
+        self.intelligence = data['intelligence']
+        self.agility = data['agility']
+        self.luck = data['luck']

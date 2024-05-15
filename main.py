@@ -1,6 +1,7 @@
 # bot.py
 import os
 import time
+import string
 
 from Pet import *
 
@@ -19,6 +20,7 @@ client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
 pets = []
+cemetary = []
 
 # @tree.command(name = "create_pet", description = "Creates a pet", guild = discord.Object(id = 474096541142089728))
 @client.event
@@ -50,7 +52,7 @@ async def on_message(message):
         while pet.health > 0 and opp_pet.health > 0:
             await channel.send(f'{pet.name} attacks {opp_pet.name}!')
             time.sleep(1)
-            damage_dealt = pet.strength
+            damage_dealt = pet.roll_damage()
             if pet.roll_crit():
                 damage_dealt *= 2
                 await channel.send(f'{pet.name} has landed a critical hit!')
@@ -64,7 +66,7 @@ async def on_message(message):
                 break
             await channel.send(f'{opp_pet.name} attacks {pet.name}!')
             time.sleep(1)
-            damage_dealt = opp_pet.strength
+            damage_dealt = opp_pet.roll_damage()
             if opp_pet.roll_crit():
                 damage_dealt *= 2
                 await channel.send(f'{opp_pet.name} has landed a critical hit!')
@@ -78,9 +80,11 @@ async def on_message(message):
         if pet.health <= 0:
             await channel.send(f'{pet.name} has died!')
             pets.remove(pet)
+            cemetary.append(pet)
         if opp_pet.health <= 0:
             await channel.send(f'{opp_pet.name} has died!')
             pets.remove(opp_pet)
+            cemetary.append(opp_pet)
 
 @tree.command(name = "create_pet", description = "send 'test' in channel", guild = discord.Object(id = 474096541142089728))
 @app_commands.describe(name="The name of your pet")
@@ -103,10 +107,13 @@ async def create_pet(ctx, name: str, species: str):
 @tree.command(name = "list_pets", description = "Lists all pets", guild = discord.Object(id = 474096541142089728))
 async def list_pets(ctx):
     living_pets = [pet for pet in pets if pet.owner == ctx.user.id]
-    if len(living_pets) == 0:
-        await ctx.response.send_message('You do not own any pets')
-        return
-    pet_list = '\n'.join([f'{pet.name} is a {pet.species} with {pet.strength} strength, {pet.intelligence} intelligence, {pet.agility} agility, and {pet.luck} luck.' for pet in living_pets])
+    dead_pets = [pet for pet in cemetary if pet.owner == ctx.user.id]
+    pet_list = 'Living pets:\n'
+    for pet in living_pets:
+        pet_list += f'{pet.name} - {pet.species}\n'
+    pet_list += 'Dead pets:\n'
+    for pet in dead_pets:
+        pet_list += f'💀 {pet.name} - {pet.species}\n'
     await ctx.response.send_message(pet_list)
 
 @tree.command(name = "feed", description = "Feeds a pet", guild = discord.Object(id = 474096541142089728))
@@ -179,6 +186,43 @@ async def fight(ctx, name: str, opp_name: str):
     if opp_pet.health <= 0:
         await ctx.response.send_message(f'{opp_pet.name} has died!')
         pets.remove(opp_pet)
+
+@tree.command(name = "gen_rand", description = "generates a random pet with random stats", guild = discord.Object(id = 474096541142089728))
+@app_commands.describe(level="The level of the pet")
+async def gen_rand(ctx, level: int):
+    # random name from 3 to 10 characters
+    name = ''.join(random.choices(string.ascii_lowercase, k=random.randint(3, 10)))
+    # random dict of stats
+    """    def load_custom(self, data):
+        self.name = data['name']
+        self.species = data['species']
+        self.health = data['health']
+        self.strength = data['strength']
+        self.intelligence = data['intelligence']
+        self.agility = data['agility']
+        self.luck = data['luck']"""
+    
+    stats = {
+        'name': name,
+        'species': random.choice([s['species'] for s in possible_species]),
+        'health': random.randint(50, 50+level),
+        'strength': random.randint(0, level),
+        'intelligence': random.randint(0, level),
+        'agility': random.randint(0, level),
+        'luck': random.randint(0, level)
+    }
+    pet = Pet(None, None, None)
+    pet.load_custom(stats)
+    pets.append(pet)
+    await ctx.response.send_message(f'Pet {name} created!')
+
+@tree.command(name = "stats", description = "gets stats of a pet", guild = discord.Object(id = 474096541142089728))
+@app_commands.describe(name="The name of the pet")
+async def stats(ctx, name: str):
+    for pet in pets:
+        if pet.name == name:
+            await ctx.response.send_message(str(pet))
+            break
 
 @client.event
 async def on_ready():
