@@ -4,7 +4,7 @@ def clamp(value, min_value, max_value):
     return max(min(value, max_value), min_value)
 
 # list of possible classes and stats associated
-species = [
+possible_species = [
     {
         'species': 'Orange Tabby',
         'strength': 6,
@@ -39,7 +39,15 @@ species = [
         'intelligence': 10,
         'agility': 7,
         'luck': 5
+        },
+    {
+        'species': 'Deprived',
+        'strength': 1,
+        'intelligence': 1,
+        'agility': 1,
+        'luck': 1
         }
+        
     ]
 
 class Pet:
@@ -60,7 +68,7 @@ class Pet:
 
     def __init__(self, name, species_name, owner):
         self.name = name
-        for s in species:
+        for s in possible_species:
             if s['species'] == species_name:
                 self.species = s['species']
                 self.strength = s['strength']
@@ -80,20 +88,26 @@ class Pet:
         self.sanity = clamp(self.sanity + 5, 0, 100)
 
     def take_damage(self, damage):
-        damage_taken = (damage - 1/self.strength)
+        damage_taken = ((0.5+(1/self.strength)) * damage)
         self.health = clamp(self.health - damage_taken, 0, 100)
+        # round to the nearest whole number
+        self.health = round(self.health)
+
+    def roll_damage(self):
+        # get random number between str-5 and str+5
+        dmg = random.randint(self.strength - 5, self.strength + 5)
+        return clamp(dmg, 0, 100)
 
     def roll_crit(self):
         # get random number between 0 and 100
         # if the number is less than the luck stat, return True
-        num = random.randint(0, 100)
+        num = random.randint(0, 50)
         return num < self.luck
-    
-    def fight(self, opponent):
-        while self.health > 0 and opponent.health > 0:
-            self.take_damage(opponent.strength)
-            opponent.take_damage(self.strength)
         
         # luck acts as a multiplier for the other stats
 
-        
+    def roll_evade(self):
+        # get random number between 0 and 100
+        # if the number is less than the agility stat, return True
+        num = random.randint(0, 20)
+        return num < self.agility
