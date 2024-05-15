@@ -101,7 +101,7 @@ class Pet:
     def roll_crit(self):
         # get random number between 0 and 100
         # if the number is less than the luck stat, return True
-        num = random.randint(0, 50)
+        num = random.randint(0, 100)
         return num < self.luck
         
         # luck acts as a multiplier for the other stats
@@ -109,7 +109,7 @@ class Pet:
     def roll_evade(self):
         # get random number between 0 and 100
         # if the number is less than the agility stat, return True
-        num = random.randint(0, 20)
+        num = random.randint(0, 100)
         return num < self.agility
     
     def load_custom(self, data):

@@ -38,7 +38,7 @@ async def on_message(message):
         pet = None
         opp_pet = None
         for p in pets:
-            if p.name == pet_name and p.owner == message.author.id:
+            if p.name == pet_name:# and p.owner == message.author.id:
                 pet = p
             if p.name == opp_pet_name:
                 opp_pet = p
@@ -56,7 +56,7 @@ async def on_message(message):
             if pet.roll_crit():
                 damage_dealt *= 2
                 await channel.send(f'{pet.name} has landed a critical hit!')
-            if opp_pet.roll_evade():
+            elif opp_pet.roll_evade():
                 await channel.send(f'{opp_pet.name} has evaded the attack!')
             else:
                 opp_pet.take_damage(damage_dealt)
@@ -70,7 +70,7 @@ async def on_message(message):
             if opp_pet.roll_crit():
                 damage_dealt *= 2
                 await channel.send(f'{opp_pet.name} has landed a critical hit!')
-            if pet.roll_evade():
+            elif pet.roll_evade():
                 await channel.send(f'{pet.name} has evaded the attack!')
             else:
                 pet.take_damage(damage_dealt)
@@ -133,59 +133,6 @@ async def play(ctx, name: str):
             pet.play()
             await ctx.response.send_message(f'{pet.name} has played!')
             break
-
-@tree.command(name = "fight", description = "Fights another pet", guild = discord.Object(id = 474096541142089728))
-@app_commands.describe(name="The name of your pet")
-@app_commands.describe(opp_name="The name of the opponent's pet")
-async def fight(ctx, name: str, opp_name: str):
-    pet = None
-    opp_pet = None
-    for p in pets:
-        if p.name == name and p.owner == ctx.user.id:
-            pet = p
-        if p.name == opp_name:
-            opp_pet = p
-    if pet is None:
-        await ctx.response.send_message(f'You do not own a pet named {name}')
-        return
-    if opp_pet is None:
-        await ctx.response.send_message(f'Pet {opp_name} does not exist')
-        return
-    
-    while pet.health > 0 and opp_pet.health > 0:
-        await ctx.response.send_message(f'{pet.name} attacks {opp_pet.name}!')
-        time.sleep(1)
-        damage_dealt = pet.strength
-        if pet.roll_crit():
-            damage_dealt *= 2
-            await ctx.response.send_message(f'{pet.name} has landed a critical hit!')
-        if opp_pet.roll_evade():
-            await ctx.response.send_message(f'{opp_pet.name} has evaded the attack!')
-        else:
-            opp_pet.take_damage(damage_dealt)
-        time.sleep(1)
-        await ctx.response.send_message(f'{opp_pet.name} has {opp_pet.health} health left')
-        if opp_pet.health <= 0:
-            break
-        await ctx.response.send_message(f'{opp_pet.name} attacks {pet.name}!')
-        time.sleep(1)
-        damage_dealt = opp_pet.strength
-        if opp_pet.roll_crit():
-            damage_dealt *= 2
-            await ctx.response.send_message(f'{opp_pet.name} has landed a critical hit!')
-        if pet.roll_evade():
-            await ctx.response.send_message(f'{pet.name} has evaded the attack!')
-        else:
-            pet.take_damage(damage_dealt)
-        time.sleep(1)
-        await ctx.response.send_message(f'{pet.name} has {pet.health} health left')
-    
-    if pet.health <= 0:
-        await ctx.response.send_message(f'{pet.name} has died!')
-        pets.remove(pet)
-    if opp_pet.health <= 0:
-        await ctx.response.send_message(f'{opp_pet.name} has died!')
-        pets.remove(opp_pet)
 
 @tree.command(name = "gen_rand", description = "generates a random pet with random stats", guild = discord.Object(id = 474096541142089728))
 @app_commands.describe(level="The level of the pet")
