@@ -1,0 +1,52 @@
+{
+    "pets": [
+        {
+            "id": 0,
+            "name": "John Xina",
+            "gender": "",
+            "species": "Deprived",
+            "owner": 253296663765057539,
+            "age": 0,
+            "health": 100,
+            "food": 100,
+            "energy": 100,
+            "sanity": 100,
+            "strength": 1,
+            "intelligence": 1,
+            "agility": 1,
+            "luck": 1
+        },
+        {
+            "id": 1,
+            "name": "bcyo",
+            "gender": "Female",
+            "species": "Orange Tabby",
+            "owner": 253296663765057539,
+            "age": 5,
+            "health": 54,
+            "food": 44,
+            "energy": 68,
+            "sanity": 2,
+            "strength": 1,
+            "intelligence": 1,
+            "agility": 1,
+            "luck": 2
+        },
+        {
+            "id": 2,
+            "name": "bcyo",
+            "gender": "Female",
+            "species": "Orange Tabby",
+            "owner": 253296663765057539,
+            "age": 5,
+            "health": 0,
+            "food": 44,
+            "energy": 68,
+            "sanity": 2,
+            "strength": 1,
+            "intelligence": 1,
+            "agility": 1,
+            "luck": 2
+        }
+    ]
+}
